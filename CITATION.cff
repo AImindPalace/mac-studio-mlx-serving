@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "mac-studio-mlx-serving: benchmarks and notes for Qwen3.5-27B fine-tune serving on Apple Silicon via MLX"
+authors:
+  - family-names: Verbeck
+    given-names: Brandon
+repository-code: "https://github.com/AImindPalace/mac-studio-mlx-serving"
+license: Apache-2.0
+keywords:
+  - llm-inference
+  - qwen3-5
+  - apple-silicon
+  - mlx
+  - quantization
+  - speculative-decoding
+related-identifiers:
+  - type: doi
+    value: 10.5281/zenodo.19673102
+    description: "Sister repo — DGX Spark NVFP4 serving"

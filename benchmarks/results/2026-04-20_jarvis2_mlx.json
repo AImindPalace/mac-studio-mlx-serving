@@ -1,0 +1,83 @@
+{
+  "date": "2026-04-20",
+  "host": "Brandons-Mac-Studio",
+  "chip": "Apple M3 Ultra",
+  "cores": 28,
+  "memory_gb": 96,
+  "memory_bandwidth_gb_s": 819,
+  "os": "macOS 26.4.1 Tahoe",
+  "mlx_lm_version": "0.31.2",
+  "model": {
+    "name": "Jarvis_2",
+    "base": "Qwen/Qwen3.5-27B",
+    "adapter": "bverbeck/trading-dora-adapter-v2",
+    "adapter_loss": 0.9451,
+    "dora_r": 64,
+    "dora_alpha": 128
+  },
+  "experiments": [
+    {
+      "label": "mlx_4bit_plain",
+      "quant": "MLX 4-bit",
+      "bits_per_weight": 4.501,
+      "size_gb": 14.0,
+      "spec_decode": null,
+      "gen_tok_s": {"run1": 13.26, "warm_run": 16.87, "runs_cold": [13.77, 15.78, 13.69], "median": 13.77, "note": "first-run Metal compile hurts; warm ~14-17"},
+      "prefill_tok_s": 80.9,
+      "peak_mem_gb": 15.413,
+      "output_correct": true
+    },
+    {
+      "label": "mlx_6bit_plain",
+      "quant": "MLX 6-bit",
+      "bits_per_weight": 6.501,
+      "size_gb": 20.0,
+      "spec_decode": null,
+      "gen_tok_s": 9.66,
+      "prefill_tok_s": 23.4,
+      "peak_mem_gb": 22.111,
+      "output_correct": true
+    },
+    {
+      "label": "mlx_4bit_draft_0p8b",
+      "quant": "MLX 4-bit",
+      "draft_model": "Qwen/Qwen3.5-0.8B (MLX 4-bit, vanilla, NOT trading-finetuned)",
+      "num_draft_tokens": 4,
+      "spec_decode": "classical draft-model (mlx-lm PR #1111)",
+      "gen_tok_s": 4.76,
+      "prefill_tok_s": 57.5,
+      "peak_mem_gb": 15.966,
+      "draft_acceptance_rate": 0.577,
+      "output_correct": true,
+      "note": "2.8x slowdown vs plain — draft distribution mismatch with fine-tuned target"
+    },
+    {
+      "label": "llamacpp_Q6K_fastmtp_pr20700",
+      "quant": "llama.cpp Q6_K",
+      "bits_per_weight": 6.56,
+      "size_gb": 22.4,
+      "spec_decode": "FastMTP (internal MTP head via PR #20700)",
+      "gen_tok_s": 1.49,
+      "prefill_tok_s": 43.08,
+      "draft_acceptance_rate": 0.426,
+      "output_correct": false,
+      "output_sample": "formula John Larry Kelly, a Kelly at Bell Labs, to engineer optimize who signal of data the through noisy channels. It formula: f*p - q / *b, where: = frac",
+      "note": "PR #20700 validated only on Qwen3.5-9B; 27B produces word-salad"
+    }
+  ],
+  "reference_spark": {
+    "label": "jarvis1_nvfp4_mtp_fair4k",
+    "date": "2026-04-12",
+    "hardware": "DGX Spark (GB10, 273 GB/s, 128 GB)",
+    "stack": "vLLM native + NVFP4 + qwen3_next_mtp",
+    "gen_tok_s": 17.64,
+    "gen_tok_s_stdev": 0.58,
+    "ttft_ms": 227.44,
+    "note": "Throughput shootout over 21 prompts"
+  },
+  "open_questions": [
+    "Why is Mac 4-bit MLX at 14 tok/s when public Qwen3.5-27B MLX benchmarks report ~31 tok/s on M2/M5 Ultras? Suspects: hybrid DeltaNet fallback kernels in mlx-lm 0.31.2; thermal; MLX-LM version regression.",
+    "Does a trading-fine-tuned 0.8B draft flip MLX spec-decode from -2.8x to positive? Single RunPod run to test.",
+    "Will PR #20700 FastMTP land for 27B? Author says 'not soon'."
+  ]
+}
